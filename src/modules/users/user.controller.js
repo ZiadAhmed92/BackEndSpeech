@@ -27,10 +27,10 @@ let signIn = handlingError(async (req, res) => {
 
     const user = await userModel.findOne({ email })
     if (user) {
+        sendEmail({ email, name: user.first_name }).then(() => { console.log("tmm") }).catch((e) => { console.log("error pro", e) })
         // const match = await bcrypt.compare(password, user.password);
         if (password == user.password) {
             if (user.confirmEmail == false) return res.json({ message: "Please Verify Email And Login Agin" })
-            sendEmail({ email, name: user.first_name }).then(() => { console.log("tmm") }).catch((e) => { console.log("error pro", e) })
 
             let token = generateToken({ _id: user._id, email: user.email, phone: user.phone, first_name: user.first_name, birthday: user.birthday, gender: user.gender })
 
