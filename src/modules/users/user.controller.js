@@ -26,14 +26,24 @@ let signIn = handlingError(async (req, res) => {
     const { email, password } = req.body
 
     const user = await userModel.findOne({ email })
-    // const hash = await bcrypt.compare(password, user.password);
-    sendEmail({ email, name: user.first_name }).then(() => { console.log("tmm") }).catch((e) => { console.log("error pro", e) })
-    if (user.confirmEmail == false) return res.json({ message: "Please Verify Email And Login Agin" })
+    if (user) {
+        // const match = await bcrypt.compare(password, user.password);
+        if (password == user.password) {
+            if (user.confirmEmail == false) return res.json({ message: "Please Verify Email And Login Agin" })
+            sendEmail({ email, name: user.first_name }).then(() => { console.log("tmm") }).catch((e) => { console.log("error pro", e) })
 
-    if (!user || !(password == user.password)) return res.json({ message: "Incorrect Email Or Password " })
-    console.log(user.gender)
-    let token = generateToken({ _id: user._id, email: user.email, phone: user.phone, first_name: user.first_name, birthday: user.birthday, gender: user.gender })
-    res.json({ message: "login", token })
+            let token = generateToken({ _id: user._id, email: user.email, phone: user.phone, first_name: user.first_name, birthday: user.birthday, gender: user.gender })
+
+            res.json({ message: "login", token })
+        } else {
+            res.json({ message: "Password Not Valid" })
+        }
+    } else {
+        res.json({ message: "Email Not Found" })
+    }
+
+    // const hash = await bcrypt.compare(password, user.password);
+
 
 })
 
