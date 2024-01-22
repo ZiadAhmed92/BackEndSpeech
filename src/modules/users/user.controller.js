@@ -82,10 +82,15 @@ let updateUser = handlingError(async (req, res) => {
 let changePassword = handlingError(async (req, res) => {
     // const { first_name, last_name, gender, birthday, phone, email, password } = req.body
     const { _id, password, confirmPassword } = req.body
-    if (password !== confirmPassword) return res.json({ message: "Confirm the password is incorrect" })
-    let user = await userModel.findOneAndUpdate({ _id }, { password })
-
-    res.json({ message: "success" })
+    const user = await userModel.findOne({ password })
+    if(user){
+        
+        await userModel.findOneAndUpdate({ _id }, { password: confirmPassword })
+        res.json({ message: "success" })
+    }
+     res.json({ message: "Old Password Is Incorrect" })
+    
+    
 
 })
 

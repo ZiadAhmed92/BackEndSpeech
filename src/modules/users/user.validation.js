@@ -21,7 +21,7 @@ export let signUpSchema = Joi.object({
     email: Joi.string()
         .email(),
     password: Joi.string()
-        .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+        .pattern(new RegExp('^(?=.*?[A-Z])?(?=.*?[a-z])?(?=.*?[0-9])?(?=.*?[#?!@$%^&*-])?.{5,18}$')),
     confirmEmail: Joi.boolean().default(false),
 })
 export let updateSchema = Joi.object({
@@ -52,7 +52,7 @@ export let signInSchema = Joi.object({
     email: Joi.string()
         .email(),
     password: Joi.string()
-        .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+        .pattern(new RegExp('^(?=.*?[A-Z])?(?=.*?[a-z])?(?=.*?[0-9])?(?=.*?[#?!@$%^&*-])?.{5,18}$')),
 })
 export let changePasswordSchema = Joi.object({
     _id: Joi.string()
@@ -60,7 +60,7 @@ export let changePasswordSchema = Joi.object({
         .max(30)
         .required(),
     password: Joi.string()
-        .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+        .pattern(new RegExp('^(?=.*?[A-Z])?(?=.*?[a-z])?(?=.*?[0-9])?(?=.*?[#?!@$%^&*-])?.{5,18}$')),
     confirmPassword: Joi.string()
-        .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+        .pattern(new RegExp('^(?=.*?[A-Z])?(?=.*?[a-z])?(?=.*?[0-9])?(?=.*?[#?!@$%^&*-])?.{5,18}$')),
 })
