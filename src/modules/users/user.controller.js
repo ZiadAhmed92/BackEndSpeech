@@ -4,6 +4,10 @@ import { generateToken } from "../../utils/generateToken.js"
 import { sendEmail } from "../../mails/mails.js"
 import jwt from "jsonwebtoken"
 import { handlingError } from "../../utils/handlingError.js"
+import { createTransport } from "nodemailer";
+import { htmlResetPassword } from "../../mails/template2.html.js"
+import { template3 } from "../../mails/template3.html.js"
+import { template4 } from "../../mails/tempalet4.html.js"
 
 let signUp = handlingError(async (req, res) => {
     const { first_name, last_name, gender, birthday, phone, email, password } = req.body
@@ -27,10 +31,13 @@ let signIn = handlingError(async (req, res) => {
 
     const user = await userModel.findOne({ email })
     if (user) {
-        sendEmail({ email, name: user.first_name }).then(() => { console.log("tmm") }).catch((e) => { console.log("error pro", e) })
+
         // const match = await bcrypt.compare(password, user.password);
         if (password == user.password) {
-            if (user.confirmEmail == false) return res.json({ message: "Please Verify Email And Login Agin" })
+            if (user.confirmEmail == false) {
+                sendEmail({ email, name: user.first_name }).then(() => { console.log("tmm") }).catch((e) => { console.log("error pro", e) })
+                return res.json({ message: "Please Verify Email And Login Agin" })
+            }
 
             let token = generateToken({ _id: user._id, email: user.email, phone: user.phone, first_name: user.first_name, birthday: user.birthday, gender: user.gender })
 
@@ -83,17 +90,75 @@ let changePassword = handlingError(async (req, res) => {
     // const { first_name, last_name, gender, birthday, phone, email, password } = req.body
     const { _id, password, confirmPassword } = req.body
     const user = await userModel.findOne({ password })
-    if(user){
-        
+    if (user) {
+
         await userModel.findOneAndUpdate({ _id }, { password: confirmPassword })
         res.json({ message: "success" })
     }
-     res.json({ message: "Old Password Is Incorrect" })
-    
-    
+    res.json({ message: "Old Password Is Incorrect" })
+})
+let forgetPassword = handlingError(async (req, res) => {
+    const { email } = req.body;
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+        return res.status(404).send('User not found');
+    }
+
+    // // Generate a random token
+    // const token = crypto.randomBytes(20).toString('hex');
+    // user.resetToken = token;
+    let token = jwt.sign({ email: email }, "resetPassword")
+    // Create a Nodemailer transporter
+    const transporter = createTransport({
+        service: 'gmail',
+        auth: {
+            user: "za693387@gmail.com",
+            pass: "hhfj dpul rdgi lcco",
+        },
+    });
+
+
+    // Send password reset email
+    const mailOptions = {
+        from: "Speech Emotion Recognition 👻",
+        to: email,
+        subject: 'Password Reset ✔',
+        text: htmlResetPassword(token),
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).send('Error sending email');
+        }
+        res.status(200).send('Password reset email sent');
+    });
 
 })
 
+let changeResetPassword = handlingError(async (req, res) => {
+    const { token } = req.params;
+    res.send(template3(token));
+})
+
+let resetPassword = handlingError(async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+    jwt.verify(token, "resetPassword", async (err, decode) => {
+
+        if (err) return res.json({ message: err })
+
+        let user = await userModel.findOne({ email: decode.email });
+        if (!user) {
+            return res.status(404).send('Email Not Found');
+        }
+        // Update the user's password and clear the resetToken
+        await userModel.findOneAndUpdate({ email: decode.email }, { password, resetPassword: false })
+
+        res.status(200).send(template4());
+
+    })
+})
 
 export {
     signUp,
@@ -102,5 +167,8 @@ export {
     verifyEmail,
     deleteUser,
     updateUser,
-    changePassword
+    changePassword,
+    resetPassword,
+    changeResetPassword,
+    forgetPassword
 }

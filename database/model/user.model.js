@@ -32,6 +32,10 @@ let userSchema = mongoose.Schema({
     confirmEmail: {
         type: Boolean,
         default:false,
+    },
+    resetPassword: {
+        type: Boolean,
+        default:false,
     }
 })
 
