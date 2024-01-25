@@ -33,10 +33,7 @@ let userSchema = mongoose.Schema({
         type: Boolean,
         default:false,
     },
-    resetPassword: {
-        type: Boolean,
-        default:false,
-    }
+
 })
 
 export const userModel= mongoose.model('user' , userSchema)

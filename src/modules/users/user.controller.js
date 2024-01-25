@@ -153,7 +153,7 @@ let resetPassword = handlingError(async (req, res) => {
             return res.status(404).send('Email Not Found');
         }
         // Update the user's password and clear the resetToken
-        await userModel.findOneAndUpdate({ email: decode.email }, { password, resetPassword: false })
+        await userModel.findOneAndUpdate({ email: decode.email }, { password})
 
         res.status(200).send(template4());
 

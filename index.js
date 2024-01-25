@@ -11,8 +11,9 @@ const port = process.env.PORT
 dbConnection()
 app.use(cors())
 app.use(express.json())
-app.use(router)
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(router)
+
 
 
 
