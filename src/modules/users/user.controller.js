@@ -131,7 +131,7 @@ let forgetPassword = handlingError(async (req, res) => {
         if (error) {
             return res.status(500).send('Error sending email');
         }
-        res.status(200).send('Password reset email sent');
+        res.status(200).json({message:"success"});
     });
 
 })
