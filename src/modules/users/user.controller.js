@@ -124,7 +124,7 @@ let forgetPassword = handlingError(async (req, res) => {
         from: "Speech Emotion Recognition 👻",
         to: email,
         subject: 'Password Reset ✔',
-        text: htmlResetPassword(token),
+        html: htmlResetPassword(token),
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
