@@ -102,7 +102,7 @@ let forgetPassword = handlingError(async (req, res) => {
     const user = await userModel.findOne({ email });
 
     if (!user) {
-        return res.status(404).send('User not found');
+        return res.status(404).json({message:'User not found'});
     }
 
     // // Generate a random token
@@ -129,7 +129,7 @@ let forgetPassword = handlingError(async (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            return res.status(500).send('Error sending email');
+            return res.status(500).json({message:'Error sending email'});
         }
         res.status(200).json({message:"success"});
     });
@@ -150,7 +150,7 @@ let resetPassword = handlingError(async (req, res) => {
 
         let user = await userModel.findOne({ email: decode.email });
         if (!user) {
-            return res.status(404).send('Email Not Found');
+            return res.status(404).json({message:'Email Not Found'});
         }
         // Update the user's password and clear the resetToken
         await userModel.findOneAndUpdate({ email: decode.email }, { password})
